@@ -1,6 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import Breadcrumb from "./Breadcrumb";
-import SeedButton from "./SeedButton";
 
 function navClass({ isActive }: { isActive: boolean }) {
   return isActive ? "active" : "";
@@ -10,7 +9,9 @@ export default function Layout() {
   return (
     <div className="app-layout">
       <aside className="sidebar">
-        <div className="sidebar-brand">Pipeline Review</div>
+        <Link to="/" className="sidebar-brand">
+          Pipeline Review
+        </Link>
         <nav>
           <ul className="sidebar-nav">
             <li>
@@ -29,7 +30,6 @@ export default function Layout() {
       <div className="main-area">
         <header className="header">
           <Breadcrumb />
-          <SeedButton />
         </header>
         <main className="page-content">
           <Outlet />

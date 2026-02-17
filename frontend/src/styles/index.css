@@ -77,9 +77,11 @@ a:hover {
 }
 
 .sidebar-brand {
+  display: block;
   font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
+  text-decoration: none;
   padding: 8px 0 20px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 16px;

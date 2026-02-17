@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models import Review, ReviewStatus, Sequence, Shot, ShotStatus, Show
-from app.search import index_review
+from app.search import clear_index, index_review
 
 SEED_DATA = {
     "shows": [
@@ -123,6 +123,7 @@ def run_seed(db: Session) -> dict:
     db.query(Sequence).delete()
     db.query(Show).delete()
     db.commit()
+    clear_index()
 
     show_map: dict[str, Show] = {}
     seq_map: dict[str, Sequence] = {}

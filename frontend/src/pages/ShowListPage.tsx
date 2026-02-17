@@ -26,7 +26,7 @@ export default function ShowListPage() {
 
       {shows && shows.length === 0 && (
         <div className="empty-state">
-          No shows yet. Click "Seed Database" to populate demo data.
+          No shows yet. Run <code>POST /seed</code> to populate demo data.
         </div>
       )}
 

@@ -32,6 +32,17 @@ async def ensure_index():
         logger.warning("Could not connect to Elasticsearch — search will be unavailable")
 
 
+def clear_index() -> None:
+    try:
+        es_client.delete_by_query(
+            index=INDEX_NAME,
+            body={"query": {"match_all": {}}},
+            refresh=True,
+        )
+    except Exception:
+        logger.warning("Failed to clear Elasticsearch index")
+
+
 def index_review(review) -> None:
     try:
         es_client.index(
