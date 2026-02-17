@@ -1,9 +1,12 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+from starlette.middleware.base import BaseHTTPMiddleware
 
+from app.config import settings
 from app.database import engine, get_db
 from app.models import Base
 from app.routers import reviews, sequences, shots, shows
@@ -25,6 +28,19 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+class ReadOnlyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.method not in ("GET", "HEAD", "OPTIONS"):
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "This is a read-only demo instance"},
+            )
+        return await call_next(request)
+
+
+if settings.read_only:
+    app.add_middleware(ReadOnlyMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

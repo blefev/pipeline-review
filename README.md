@@ -118,3 +118,14 @@ docker compose run api pytest
 ```
 
 Tests use an in-memory SQLite database and do not require Elasticsearch.
+
+## Deploying as a Public Demo
+
+Set `READ_ONLY=true` to reject all POST/PATCH/DELETE requests with a 403:
+
+```bash
+# Seed data first, then restart in read-only mode
+docker compose up -d
+curl -X POST http://localhost:8000/seed
+READ_ONLY=true docker compose up -d
+```

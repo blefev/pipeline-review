@@ -13,6 +13,7 @@ services:
     environment:
       DATABASE_URL: postgresql://pipeline:pipeline@postgres:5432/pipeline
       ELASTICSEARCH_URL: http://elasticsearch:9200
+      READ_ONLY: ${READ_ONLY:-false}
     depends_on:
       postgres:
         condition: service_healthy
