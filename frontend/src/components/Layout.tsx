@@ -1,4 +1,6 @@
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
+import Breadcrumb from "./Breadcrumb";
+import SeedButton from "./SeedButton";
 
 export default function Layout() {
   return (
@@ -7,15 +9,21 @@ export default function Layout() {
         <div className="sidebar-brand">Pipeline Review</div>
         <nav>
           <ul className="sidebar-nav">
-            <li><a href="/">Shows</a></li>
-            <li><a href="/search">Search</a></li>
+            <li>
+              <NavLink to="/" end>
+                Shows
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/search">Search</NavLink>
+            </li>
           </ul>
         </nav>
       </aside>
       <div className="main-area">
         <header className="header">
-          <div />
-          <div />
+          <Breadcrumb />
+          <SeedButton />
         </header>
         <main className="page-content">
           <Outlet />
