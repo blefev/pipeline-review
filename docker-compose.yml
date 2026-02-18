@@ -2,38 +2,38 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "${FRONTEND_PORT:-3000}:80"
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-api:8000}
     depends_on:
       - api
 
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "${API_PORT:-8000}:8000"
+    env_file: .env
     environment:
-      DATABASE_URL: postgresql://pipeline:pipeline@postgres:5432/pipeline
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pipeline}:${POSTGRES_PASSWORD:-pipeline}@postgres:5432/${POSTGRES_DB:-pipeline}
       ELASTICSEARCH_URL: http://elasticsearch:9200
-      READ_ONLY: ${READ_ONLY:-false}
     depends_on:
       postgres:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
-    volumes:
-      - .:/app
 
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: pipeline
-      POSTGRES_PASSWORD: pipeline
-      POSTGRES_DB: pipeline
+      POSTGRES_USER: ${POSTGRES_USER:-pipeline}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pipeline}
+      POSTGRES_DB: ${POSTGRES_DB:-pipeline}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pipeline"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pipeline}"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -45,9 +45,9 @@ services:
       - node.name=elasticsearch
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms256m -Xmx256m}"
     ports:
-      - "9201:9200"
+      - "${ES_PORT:-9201}:9200"
     volumes:
       - esdata:/usr/share/elasticsearch/data
     healthcheck:

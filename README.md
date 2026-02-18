@@ -119,13 +119,32 @@ docker compose run api pytest
 
 Tests use an in-memory SQLite database and do not require Elasticsearch.
 
-## Deploying as a Public Demo
+## Configuration
 
-Set `READ_ONLY=true` to reject all POST/PATCH/DELETE requests with a 403:
+All configuration is via environment variables. Copy `.env.example` to `.env` and adjust:
 
 ```bash
-# Seed data first, then restart in read-only mode
-docker compose up -d
-curl -X POST http://localhost:8000/seed
-READ_ONLY=true docker compose up -d
+cp .env.example .env
 ```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CORS_ORIGINS` | _(empty)_ | Comma-separated allowed origins |
+| `READ_ONLY` | `false` | Reject all non-GET requests with 403 |
+| `SEED_ON_STARTUP` | `false` | Auto-seed if database is empty on boot |
+| `POSTGRES_USER` | `pipeline` | Postgres username |
+| `POSTGRES_PASSWORD` | `pipeline` | Postgres password |
+| `POSTGRES_DB` | `pipeline` | Postgres database name |
+| `FRONTEND_PORT` | `3000` | Host port for the frontend |
+| `API_PORT` | `8000` | Host port for the API |
+| `ES_JAVA_OPTS` | `-Xms256m -Xmx256m` | Elasticsearch JVM heap |
+
+## Deploying as a Public Demo
+
+```bash
+cp .env.example .env
+# Edit .env: set READ_ONLY=true, SEED_ON_STARTUP=true, CORS_ORIGINS, FRONTEND_PORT=80
+docker compose up -d
+```
+
+With `SEED_ON_STARTUP=true`, the API auto-seeds on first boot if the database is empty. `READ_ONLY=true` then blocks all writes.

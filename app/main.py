@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
 from app.database import engine, get_db
-from app.models import Base
+from app.models import Base, Show
 from app.routers import reviews, sequences, shots, shows
 from app.search import es_client, ensure_index
 from app.seed import run_seed
@@ -18,6 +18,17 @@ from app.seed import run_seed
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     await ensure_index()
+
+    if settings.seed_on_startup:
+        from app.database import SessionLocal
+
+        db = SessionLocal()
+        try:
+            if db.query(Show).count() == 0:
+                run_seed(db)
+        finally:
+            db.close()
+
     yield
     es_client.close()
 
@@ -28,6 +39,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
 
 class ReadOnlyMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -42,12 +54,13 @@ class ReadOnlyMiddleware(BaseHTTPMiddleware):
 if settings.read_only:
     app.add_middleware(ReadOnlyMiddleware)
 
+cors_origins = []
+if settings.cors_origins:
+    cors_origins.extend(o.strip() for o in settings.cors_origins.split(",") if o.strip())
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
