@@ -10,6 +10,7 @@ export default function Layout() {
     <div className="app-layout">
       <aside className="sidebar">
         <Link to="/" className="sidebar-brand">
+          <img src="/favicon.svg" alt="" width="20" height="20" />
           Pipeline Review
         </Link>
         <nav>
